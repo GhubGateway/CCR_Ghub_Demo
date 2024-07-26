@@ -29,8 +29,6 @@ class RunJobs():
 
     def __init__(self, ice_sheet_folder, ice_sheet_description, modeling_groups):
 
-        self.parent = parent
-        self.workingdir = workingdir
         self.ice_sheet_folder = ice_sheet_folder
         self.ice_sheet = ice_sheet_folder.split('/')[-1]
         self.ice_sheet_description = ice_sheet_description
@@ -38,8 +36,6 @@ class RunJobs():
         self.maxwalltime = 30 #minutes
 
         #'''
-        print('self.parent: ', self.parent)
-        print('self.workingdir: ', self.workingdir)
         print('self.ice_sheet_folder: ', self.ice_sheet_folder)
         print('self.ice_sheet: ', self.ice_sheet)
         print('self.ice_sheet_description: ', self.ice_sheet_description)
@@ -166,7 +162,8 @@ class RunJobs():
             # Submit the Pegasus Workflow Plan
             #########################################################
     
-            #'''
+            # *** Disabled pending resolution of an open Ghub ticket ***
+            '''
             submitcmd = ['submit', '--venue', 'WF-vortex-ghub', 'pegasus-plan', '--dax', 'workflow.yml']
             #print ('submitcmd: ', submitcmd)
 
@@ -197,7 +194,7 @@ class RunJobs():
                         # In case there is more than one stderr file in the working directory
                         break
                 return
-              #'''
+              '''
              
         except Exception as e:
             
