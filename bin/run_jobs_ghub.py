@@ -27,19 +27,21 @@ from Pegasus.api import *
 class RunJobs():
     
 
-    def __init__(self, ice_sheet_folder, ice_sheet_description, modeling_groups):
+    def __init__(self, username, ice_sheet_description, ice_sheet_folder, modeling_groups):
 
+        self.username = username
+        self.ice_sheet_description = ice_sheet_description
         self.ice_sheet_folder = ice_sheet_folder
         self.ice_sheet = ice_sheet_folder.split('/')[-1]
-        self.ice_sheet_description = ice_sheet_description
         self.modeling_groups = modeling_groups
-        self.maxwalltime = 30 #minutes
+        self.walltime = 5 #minutes - execution times
 
         #'''
-        print('self.ice_sheet_folder: ', self.ice_sheet_folder)
-        print('self.ice_sheet: ', self.ice_sheet)
-        print('self.ice_sheet_description: ', self.ice_sheet_description)
-        print('self.modeling_groups: ', self.modeling_groups)
+        print('self.username: %s' %self.username)
+        print('self.ice_sheet_description: %s' %self.ice_sheet_description)
+        print('self.ice_sheet_folder: %s' %self.ice_sheet_folder)
+        print('self.ice_sheet: %s' %self.ice_sheet)
+        print('self.modeling_groups: %s' %str(self.modeling_groups))
         #'''
 
     def run_jobs(self):
@@ -47,7 +49,7 @@ class RunJobs():
         try:
 
             #########################################################
-            # Create the Pegasus WMS workflow
+            # Run the workflow jobs with a Pegasus WMS workflow
             #########################################################
             
             # Pegasus requires three catalogs and the workflow's job definitions to plan and start a workflow:
@@ -92,17 +94,18 @@ class RunJobs():
             rc.add_replica('local', File('process_netcdf_info.py'), os.path.join(tooldir, 'bin', 'process_netcdf_info.py'))
             wf.add_replica_catalog(rc)
 
-            # Add job(s) to the workflow
-
             modeling_groups_list = list(self.modeling_groups.split(','))
+            modeling_groups_list_len = len(modeling_groups_list)
             #print ('type(self.modeling_groups_list): ', type(modeling_groups_list))
-            #print('len(modeling_groups_list): ', len(modeling_groups_list))
+            print ('modeling_groups_list_len: ', modeling_groups_list_len)
             print ('modeling_groups_list: ', modeling_groups_list)
 
             file_basename_list = []
             get_netcdf_info_job_list = []
 
-            for i in range(len(modeling_groups_list)):
+            # Add job(s) to the workflow
+
+            for i in range(modeling_groups_list_len):
             
                 modeling_group  = modeling_groups_list[i]
                 #print ('modeling_group: ', modeling_group)
@@ -120,7 +123,7 @@ class RunJobs():
                     .add_inputs(File('get_netcdf_info.py'))\
                     .add_outputs(File('%s_netcdf_info.txt' %file_basename), stage_out=True, register_replica=False)\
                     .add_outputs(File('%s_netcdf_info.json' %file_basename), stage_out=False, register_replica=False)\
-                    .add_metadata(time='%d' %self.maxwalltime)
+                    .add_metadata(time='%d' %self.walltime)
                     
                 wf.add_jobs(get_netcdf_info_job)
                 get_netcdf_info_job_list.append (get_netcdf_info_job)
@@ -129,7 +132,7 @@ class RunJobs():
                 .add_args('''process_netcdf_info.py %s %s %s''' %(self.ice_sheet_folder, self.ice_sheet_description, self.modeling_groups))\
                 .add_inputs(File('process_netcdf_info.py'))\
                 .add_outputs(File('%s_processed_netcdf_info.txt' %self.ice_sheet), stage_out=True, register_replica=False)\
-                .add_metadata(time='%d' %self.maxwalltime)
+                .add_metadata(time='%d' %self.walltime)
                 
             for i in range(len(modeling_groups_list)):
                 process_netcdf_info_job.add_inputs(File('%s_netcdf_info.json' %file_basename_list[i]), bypass_staging=True)
@@ -141,10 +144,10 @@ class RunJobs():
             wf.add_dependency(process_netcdf_info_job, parents=get_netcdf_info_job_list)
 
             #########################################################
-            # Create the Pegasus Workflow YML file
+            # Create the Pegasus Workflow YAML file
             #########################################################
     
-            # Create the YML file
+            # Create the YAML file
             try:
                 wf.write()
             except PegasusClientError as e:
@@ -156,7 +159,7 @@ class RunJobs():
             #print (file_contents)
             #fp.close()
             
-            sys.stdout.flush()
+            #sys.stdout.flush()
             
             #########################################################
             # Submit the Pegasus Workflow Plan

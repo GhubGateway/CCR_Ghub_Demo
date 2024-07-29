@@ -11,7 +11,7 @@
 #---------------------------------------------------------------------------------------------------
 
 import ast
-#import numpy as np
+import numpy as np
 import os
 import subprocess
 import sys
@@ -19,19 +19,21 @@ import sys
 class RunJobs():
     
 
-    def __init__(self, ice_sheet_folder, ice_sheet_description, modeling_groups):
+    def __init__(self, username, ice_sheet_description, ice_sheet_folder, modeling_groups):
 
+        self.username = username
+        self.ice_sheet_description = ice_sheet_description
         self.ice_sheet_folder = ice_sheet_folder
         self.ice_sheet = ice_sheet_folder.split('/')[-1]
-        self.ice_sheet_description = ice_sheet_description
         self.modeling_groups = modeling_groups
-
+        self.waittime = 15 #minutes - includes pending and execution times
 
         #'''
-        print('self.ice_sheet_folder: ', self.ice_sheet_folder)
-        print('self.ice_sheet: ', self.ice_sheet)
-        print('self.ice_sheet_description: ', self.ice_sheet_description)
-        print('self.modeling_groups: ', self.modeling_groups)
+        print('self.username: %s' %self.username)
+        print('self.ice_sheet_description: %s' %self.ice_sheet_description)
+        print('self.ice_sheet_folder: %s' %self.ice_sheet_folder)
+        print('self.ice_sheet: %s' %self.ice_sheet)
+        print('self.modeling_groups: %s' %str(self.modeling_groups))
         #'''
         
     def run_jobs(self):
@@ -39,43 +41,52 @@ class RunJobs():
         try:
 
             #########################################################
-            # Create the Pegasus WMS workflow
+            # Run the workflow jobs
             #########################################################
     
             tooldir = os.path.dirname(os.path.dirname(os.path.realpath(os.path.abspath(__file__))))
             print ('tooldir: ', tooldir)
             
-            # Run the jobs
-
             modeling_groups_list = list(self.modeling_groups.split(','))
             modeling_groups_list_len = len(modeling_groups_list)
             #print ('type(self.modeling_groups_list): ', type(modeling_groups_list))
             print ('modeling_groups_list_len: ', modeling_groups_list_len)
             print ('modeling_groups_list: ', modeling_groups_list)
 
-            file_basename_list = []
-            get_netcdf_info_job_list = []
-
             launch_script = os.path.join(tooldir, 'bin', 'pythonLaunch.sh')
             sbatch_script = os.path.join(tooldir, 'bin', 'get_netcdf_info_sbatch_slurm.sh')
             slurm_script = os.path.join(tooldir, 'bin', 'get_netcdf_info_slurm.sh')
             job_script = os.path.join(tooldir, 'bin', 'get_netcdf_info.py')
+            wait_script = os.path.join(tooldir, 'bin', 'wait.sh')
 
-            exitCode = subprocess.call([sbatch_script, slurm_script, launch_script, job_script, self.ice_sheet_folder+'/', self.modeling_groups])
-                
+            # Implements minimal method to submit batch slurm jobs and wait for the slurm jobs to complete.
+            # More sophisticated methods exist.
+            exitCodes = np.zeros(modeling_groups_list_len)
+            for i in range(modeling_groups_list_len):
+            
+                modeling_group  = modeling_groups_list[i]
+                print ('modeling_group: ', modeling_group)
+                modeling_group_path = os.path.join(self.ice_sheet_folder, modeling_group)
+                print ('modeling_group_path: ', modeling_group_path)
+                exitCodes[i] = subprocess.call([sbatch_script, slurm_script, launch_script, job_script, modeling_group_path])
+            #print('exitCodes: %s' %str(exitCodes))
+
             # process_netcdf_info_job depends on all the get_netcdf_info_jobs completing
             
-            if exitCode == 0:
+            exitCode = subprocess.call([wait_script, self.username, str(self.waittime)])
+            #print ('exitCode: %s' %str(exitCode))
+
+            if np.sum(exitCodes) == 0:
                 sbatch_script = os.path.join(tooldir, 'bin', 'process_netcdf_info_sbatch_slurm.sh')
                 slurm_script = os.path.join(tooldir, 'bin', 'process_netcdf_info_slurm.sh')
                 job_script = os.path.join(tooldir, 'bin', 'process_netcdf_info.py')
-                exitCode = subprocess.call([sbatch_script, slurm_script, launch_script, job_script, self.ice_sheet_folder, self.ice_sheet_description, self.modeling_groups])
-                print('exitCode: ', exitCode)
+                exitCodes[0] = subprocess.call([sbatch_script, slurm_script, launch_script, job_script, self.ice_sheet_folder, self.ice_sheet_description, self.modeling_groups])
+                #print('exitCodes: %s' %str(exitCodes))
+                exitCode = subprocess.call([wait_script, self.username, str(self.waittime)])
+                #print ('exitCode: %s' %str(exitCode))
             else:
                 print ('A nonzero exitCode was returned.')
-                print ('exitCode: ', exitCode)
-                
-            sys.stdout.flush()
+                print ('exitCodes: %s' %str(exitCodes))
             
         except Exception as e:
             
