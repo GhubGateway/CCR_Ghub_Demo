@@ -36,10 +36,6 @@ def main(argv):
     modeling_group_path = argv[1]
     print ('modeling_group_path: ', modeling_group_path)
 
-    # See the isschecker tool data/smip6_criteria.csv.
-    recognized_variables = ['acabf', 'base', 'libmassbffl', 'libmassbfgr', 'lithk', 'orog', 'sftflf', 'sftgif', 'sftgrf', 'strbasemag', 'topg', 'xvelmean', 'yvelmean']
-    #print ('recognized_variables: ', recognized_variables)
-    
     file_basename = '_'.join(modeling_group_path.split('/')[-2:])
     print ('file_basename: ', file_basename)
     
@@ -63,8 +59,8 @@ def main(argv):
             #print ('file: ', file)
             if os.path.isfile(os.path.join(path, file)):
 
-                # Ignore hidden files
-                if file.startswith('.') == False:
+                # Ignore hidden files and files that do not end with .nc
+                if file.startswith('.') == False and file.endswith('.nc') == True:
                 
                     try:
                         
@@ -73,7 +69,7 @@ def main(argv):
                         
                         variable = file_split[0]
                         
-                        if variable in recognized_variables:
+                        if (variable != 'scalar'): # Examples:  | scalar | ['time_bnds', 'tendlibmassbf', 'iareaf', 'iareag', 'tendligroundf', 'tendacabf', 'lim', 'tendlicalvf', 'limnsw']
 
                             #print ('variable: ', variable)
                             ice_sheet = path_split[-4]
