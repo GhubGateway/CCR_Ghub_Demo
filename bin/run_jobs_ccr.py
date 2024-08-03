@@ -54,7 +54,7 @@ class RunJobs():
             print ('modeling_groups_list: ', modeling_groups_list)
 
             launch_script = os.path.join(tooldir, 'bin', 'pythonLaunch.sh')
-            sbatch_script = os.path.join(tooldir, 'bin', 'get_netcdf_info_sbatch_slurm.sh')
+            sbatch_script = os.path.join(tooldir, 'bin', 'sbatch_slurm.sh')
             slurm_script = os.path.join(tooldir, 'bin', 'get_netcdf_info_slurm.sh')
             job_script = os.path.join(tooldir, 'bin', 'get_netcdf_info.py')
             wait_script = os.path.join(tooldir, 'bin', 'wait.sh')
@@ -77,7 +77,7 @@ class RunJobs():
             #print ('exitCode: %s' %str(exitCode))
 
             if np.sum(exitCodes) == 0:
-                sbatch_script = os.path.join(tooldir, 'bin', 'process_netcdf_info_sbatch_slurm.sh')
+                sbatch_script = os.path.join(tooldir, 'bin', 'sbatch_slurm.sh')
                 slurm_script = os.path.join(tooldir, 'bin', 'process_netcdf_info_slurm.sh')
                 job_script = os.path.join(tooldir, 'bin', 'process_netcdf_info.py')
                 exitCodes[0] = subprocess.call([sbatch_script, slurm_script, launch_script, job_script, self.ice_sheet_folder, self.ice_sheet_description, self.modeling_groups])

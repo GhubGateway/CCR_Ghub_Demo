@@ -17,6 +17,15 @@ module load python/3.9.6
 module load ipython/7.26.0
 
 source ${SOFTWARE_PATH}/2023.01/python/venv/bin/activate
+
+echo "which python3: "$(which python3)
+echo "which jupyter: "$(which jupyter)
+
 python3 -m ipykernel install --user --name ccrghubdemo_kernel
+
+# Note: to uninstall the kernel
+#jupyter kernelspec uninstall ccrghubdemo_kernel
+
+jupyter kernelspec list
 
 deactivate
