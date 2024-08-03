@@ -30,7 +30,7 @@ git clone https://github.com/GhubGateway/CCR_Ghub_Demo
 - Login to Ghub.
 - Launch the Workspace 10 Tool.
 - In the terminal window, clone this GitHub repository. 
-- Launch the Jupyter Notebooks (202210) Tool.
+- Launch the Jupyter Lab (202210) Tool.
 - Open the ccrghubdemo.ipynb notebook.
 - The Python 3 (ipykernel) Kernel is set by defaiult.
 - Select Kernel, Restart & Run All.
