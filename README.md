@@ -2,9 +2,9 @@
 
 This Jupyter Notebook provides a demonstration and scripts for executing jobs in parallel on the University at Buffalo (UB)'s Center For Computational Research (CCR)'s high performance compute cluster, UB-HPC. 
 
-On CCR, sbatch and Slurm commands are used to execute the parallel jobs.
+On [CCR](https://www.buffalo.edu/ccr.html), sbatch and Slurm commands are used to execute the parallel jobs.
 
-On Ghub, the Pegasus Workflow Management System (WMS) is used to execute the parallel jobs.
+On [Ghub](https://theghub.org), the Pegasus Workflow Management System (WMS) is used to execute the parallel jobs.
 
 ## How to use this notebook:
 

@@ -16,7 +16,7 @@ echo "launch_script: "$launch_script
 job_script=$2
 echo "job_script: "$job_script
 ice_sheet_folder=$3
-echo "ice_sheet_folder: "$jice_sheet_folder
+echo "ice_sheet_folder: "$ice_sheet_folder
 ice_sheet_description=$4
 echo "ice_sheet_description: "$ice_sheet_description
 modeling_groups=$5
