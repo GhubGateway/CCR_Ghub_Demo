@@ -1,10 +1,10 @@
 # CCR/Ghub Jupyter Notebook Demo
 
-This Jupyter Notebook provides a demonstration and scripts for executing jobs in parallel on the University at Buffalo (UB)'s Center For Computational Research (CCR)'s high performance compute cluster, UB-HPC. 
+This Jupyter Notebook provides a demonstration and template scripts for executing up to nineteen jobs in parallel on the University at Buffalo (UB)'s Center For Computational Research (CCR)'s high performance compute cluster, UB-HPC. 
 
 On [CCR](https://www.buffalo.edu/ccr.html), sbatch and Slurm commands are used to execute the parallel jobs.
 
-On [Ghub](https://theghub.org), the Pegasus Workflow Management System (WMS) is used to execute the parallel jobs.
+On [Ghub](https://theghub.org), the Pegasus Workflow Management System (WMS) is used to execute the parallel jobs. Launch the Ghub [Pegasus WMS Workflows Tutorial and Templates](https://theghub.org/tools/ghubex1) tool, GitHub Repository, [Ghub_Pegasus_WMS_Tutorial_and_Templates](https://github.com/GhubGateway/Ghub_Pegasus_WMS_Tutorial_and_Templates), to learn more about running Pegasus WMS workflows on Ghub.
 
 ## How to use this notebook:
 
